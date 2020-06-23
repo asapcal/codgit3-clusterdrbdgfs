@@ -18,7 +18,7 @@ echo "Script para config de cluster DRBD com gfs e CLVM!"
 #-https://www.justinsilver.com/technology/linux/dual-primary-drbd-centos-6-gfs2-pacemaker/
 #-https://www.ibm.com/developerworks/community/blogs/mhhaque/entry/how_to_configure_red_hat_cluster_with_fencing_of_two_kvm_guests_running_on_two_ibm_powerkvm_hosts?lang=en
 
-#.. e muitos outros, conforme decorrermos citaremos mais links.
+#.. e etc.
 
 #Aqui esta uma representação quase gráfica do projeto com base no link
 #-https://icicimov.github.io/blog/high-availability/Clustering-with-Pacemaker-DRBD-and-GFS2-on-Bare-Metal-servers-in-SoftLayer/
@@ -47,7 +47,6 @@ echo "Script para config de cluster DRBD com gfs e CLVM!"
 
 #Foram utilizadas duas maquinas virtuais virtuais com dois discos rígidos idênticos de 50,3Gb e juntamente com isso duas partições de 10,7Gb.
 #IPC: Estas duas maquinas virtuais pertencem a mesma rede e é importante salientar que estas duas partições são idênticas!!
-#Abaixo, encontram-se as saídas do comando lsblk em ambas maquinas virtuais.
 
 #Já quanto ao sistema operacional, usamos a versão mais atual do CentOS, que nos momento que esta documentação esta sendo escrita é a 7.Juntamente com os programas Pacemaker,
 #Corosync, Stonith, Fence, DLM, CLVM, gfs2fs e etc, todos em suas versoes mais atuais e estaveis lançadas até o momento. 
@@ -62,14 +61,13 @@ echo "Script para config de cluster DRBD com gfs e CLVM!"
 
 #Lembrete, mantenha sempre o seu sistema atualizado, um exemplo de comando que pode te ajudar é o: yum update .
 #Para mudar o IP destas maquinas precisaremos acessar o arquivo: vi /etc/sysconfig/network-scripts/ifcfg-eth0 .
-#E depois de acessar mude sua configuração para os seguintes estados:
 
-#Neste caso, mudei o endereço IP's das mv1 e mv2 para: 10.255.255.x como modo para estático.
+#Mude o endereço IP's das mv1 e mv2 para: 10.255.255.x como modo para estático.
 
 #Agora, com as placas de rede já configuradas, precisa-se redefinir o nome das maquinas virtuais no arquivo: /etc /hosts. Fiz isso com o comando: “hostname novonome”.
 #Por exemplo: maquina1.drbdcluster
 
-#IPC: Exitem varias formas, por exemplo: hostnamectl set-hostname “lalala.pc.uou”. Em que “lalala.pc.uou” é o novo hostname completo da minha maquina. Em caso de duvida,
+#IPC: Exitem varias formas, por exemplo: hostnamectl set-hostname “abc.pc”. Em que “def.p” é o novo hostname completo da minha maquina. Em caso de duvida,
 #recomendo o link: -https://www.hostinger.com.br/tutoriais/como-mudar-hostname-ubuntu/
 #Agora que a fase inicial da preparação terminou, vamos começar de vez a configuração. Primeiramente vou mostrar um layout de como o projeto foi desenvolvido por mim e a
 #forma que achei mas comoda pra implementar a configuração. 
