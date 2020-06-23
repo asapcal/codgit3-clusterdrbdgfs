@@ -1,4 +1,4 @@
-# cod3-clusterdrbdgfs
+# Script para config de cluster DRBD com gfs e CLVM
 
 #Este tutorial nada mais é do que um compilado com algumas modificações de diversos tutoriais pesquisados na internet, listarei abaixo alguns deles:
 
