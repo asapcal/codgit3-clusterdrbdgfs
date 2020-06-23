@@ -10,7 +10,7 @@ Este tutorial nada mais é do que um compilado com algumas modificações de div
 - https://www.golinuxcloud.com/ste-by-step-configure-high-availability-cluster-centos-7/
 - https://www.justinsilver.com/technology/linux/dual-primary-drbd-centos-6-gfs2-pacemaker/
 - https://www.ibm.com/developerworks/community/blogs/mhhaque/entry/how_to_configure_red_hat_cluster_with_fencing_of_two_kvm_guests_running_on_two_ibm_powerkvm_hosts?lang=en
-.. e muitos outros, conforme decorrermos citaremos mais links.
+.. e etc.
 
 Foram utilizadas duas maquinas virtuais com dois discos rígidos idênticos de 50,3Gb e juntamente com isso duas partições de 10,7Gb.
 IPC: Estas duas maquinas virtuais pertencem a mesma rede e é importante salientar que estas duas partições são idênticas!!
