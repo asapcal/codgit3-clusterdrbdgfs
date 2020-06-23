@@ -13,3 +13,14 @@
 #-https://www.ibm.com/developerworks/community/blogs/mhhaque/entry/how_to_configure_red_hat_cluster_with_fencing_of_two_kvm_guests_running_on_two_ibm_powerkvm_hosts?lang=en
 
 #.. e muitos outros, conforme decorrermos citaremos mais links.
+
+#Foram utilizadas duas maquinas virtuais virtuais com dois discos rígidos idênticos de 50,3Gb e juntamente com isso duas partições de 10,7Gb.
+#IPC: Estas duas maquinas virtuais pertencem a mesma rede e é importante salientar que estas duas partições são idênticas!!
+#Abaixo, encontram-se as saídas do comando lsblk em ambas maquinas virtuais.
+
+#Já quanto ao sistema operacional, usamos a versão mais atual do CentOS, que nos momento que esta documentação esta sendo escrita é a 7.Juntamente com os programas Pacemaker,
+#Corosync, Stonith, Fence, DLM, CLVM, gfs2fs e etc, todos em suas versoes mais atuais e estaveis lançadas até o momento. 
+#Lembrando que toda esta configuração bem como seus resultados serão feitos via terminal, e os prints de cada configuração serão colocados neste arquivo. Antes de começarmos 
+#colocarei os prints de como meu disco rígido esta organizado.Iniciando a configuração, primeiramente precisamos deixar essas duas maquinas prontas para receber a configuração
+#inicial, e o primeiro passo é definirmos os seus IP’s como estáticos, para criarmos uma conexão ssh estável entre elas. 
+#Acessaremos as maquinas via SSH para este tutorial. Caso você não saiba usar o SSH veja este tutorial:(http://rberaldo.com.br/usando-o-ssh/), usaremos somente SSH.
