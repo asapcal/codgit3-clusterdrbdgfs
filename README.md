@@ -12,8 +12,8 @@ Este tutorial nada mais é do que um compilado com algumas modificações de div
 - https://www.ibm.com/developerworks/community/blogs/mhhaque/entry/how_to_configure_red_hat_cluster_with_fencing_of_two_kvm_guests_running_on_two_ibm_powerkvm_hosts?lang=en
 .. e etc.
 
-Foram utilizadas duas maquinas virtuais com dois discos rígidos idênticos de 50,3Gb e juntamente com isso duas partições de 10,7Gb.
-IPC: Estas duas maquinas virtuais pertencem a mesma rede e é importante salientar que estas duas partições são idênticas!!
+Nestes testes foram utilizadas duas maquinas virtuais com dois discos rígidos idênticos de aproximadamente 50Gb.
+IPC: Estas duas vms astão na mesma rede com partições são idênticas!
 
 Já quanto ao sistema operacional, usamos a versão mais atual do CentOS, que nos momento que esta documentação esta sendo escrita é a 7.Juntamente com os programas Pacemaker,
 Corosync, Stonith, Fence, DLM, CLVM, gfs2fs e etc, todos em suas versoes mais atuais e estaveis lançadas até o momento. 
