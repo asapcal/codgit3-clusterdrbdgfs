@@ -10,11 +10,9 @@ Este tutorial nada mais é do que um compilado com algumas modificações de div
 - https://www.golinuxcloud.com/ste-by-step-configure-high-availability-cluster-centos-7/
 - https://www.justinsilver.com/technology/linux/dual-primary-drbd-centos-6-gfs2-pacemaker/
 - https://www.ibm.com/developerworks/community/blogs/mhhaque/entry/how_to_configure_red_hat_cluster_with_fencing_of_two_kvm_guests_running_on_two_ibm_powerkvm_hosts?lang=en
-.. e etc.
+.. e etc
 
-Nestes testes foram utilizadas duas maquinas virtuais com dois discos rígidos idênticos de aproximadamente 50Gb.
-IPC: Estas duas vms astão na mesma rede com partições são idênticas!
-
+Nestes testes foram utilizadas duas maquinas virtuais com dois discos rígidos idênticos de aproximadamente 50Gb na mesma rede com partições são idênticas!
 Já quanto ao sistema operacional, usamos a versão mais atual do CentOS, que nos momento que esta documentação esta sendo escrita é a 7.Juntamente com os programas Pacemaker,
 Corosync, Stonith, Fence, DLM, CLVM, gfs2fs e etc, todos em suas versoes mais atuais e estaveis lançadas até o momento. 
 Lembrando que toda esta configuração bem como seus resultados serão feitos via terminal, e os prints de cada configuração serão colocados neste arquivo. Antes de começarmos 
