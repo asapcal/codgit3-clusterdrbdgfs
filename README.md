@@ -50,22 +50,19 @@ Acessaremos as maquinas apenas via SSH para este tutorial. Caso você não saiba
 Ex:
 
 ```
-vm1 : 10.255.255.xxx → ssh vm1@10.255.255.xxx
+hostname:vm1 - ip:10.255.255.xxx → ssh vm1@10.255.255.xxx
 ```
 
 Lembrete, mantenha sempre o seu sistema atualizado, um exemplo de comando que pode te ajudar é o: yum update .
 Mudar o IP destas maquinas precisaremos acessar o arquivo: vi /etc/sysconfig/network-scripts/ifcfg-eth0 . E mudar para o modo para estático.
 Agora, com as placas de rede já configuradas, precisa-se redefinir o nome das maquinas virtuais no arquivo: /etc /hosts.
-IPC: Exitem varias formas, por exemplo: hostnamectl set-hostname “lalala.pc.uou”. Em que “lalala.pc.uou” é o novo hostname completo da minha maquina. Em caso de duvida, recomendo o link: -https://www.hostinger.com.br/tutoriais/como-mudar-hostname-ubuntu/
-Começar de vez a configuração. Primeiramente vou mostrar um layout de como o projeto foi desenvolvido e a forma que achei mas fácil pra implementar a configuração.
+IPC: Exitem varias formas, por exemplo: hostnamectl set-hostname “vm0.cluster”. Em que “vm0.cluster” é o novo hostname completo da minha maquina. Em caso de duvida, recomendo o link: -https://www.hostinger.com.br/tutoriais/como-mudar-hostname-ubuntu/
 
 ## 4. Etapas da configuração
 
 Etapa 1: de inicio nos temos a preparação da maquina quanto a rede e nome, que acabei de mostrar. Juntamente com a instalação do DRBD e a sua configuração em modo (DUAL-PRIMARY).E depois a instalação e configuração dos gerenciadores de cluster, o COROSYNC e o PACEMAKER. 
 
-Etapa 2: prosseguindo  para etapa 2 temos as configurações para o funcionamento do CLUSTER PCS bem como a configuração deste cluster em conjunto com o Fence e Stonith utilizando um de seus agentes de segurança o (fence_xvm) que é voltado a maquinas virtuais, se você não esta utilizando maquinas virtuais ou virtualizadas, procure por seu agente especifico. Deve-se ter muito cuidado com a configuração deste recurso, por ele sera um apoio aos futuros recursos em todos os nós do cluster.
-Dando continuidade nos configuraremos os recursos de DLM, CLVM(LVM). O primeiro é uma parte obrigatória do cluster e tem a função de gerenciar os blocos assim como o nome sugere, porque, se um dos nós do cluster cair, é nosso dever manter o outo nó do cluster limpo.
-E o (LVM/CLVM) nada mais são que gerenciadores de volume lógico. Se vários nós do cluster exigirem acesso simultâneo de leitura / gravação a volumes LVM em um sistema ativo / ativo, você deverá usar o CLVMD.
+Etapa 2: para o funcionamento do CLUSTER PCS e a configuração deste cluster com o Fence e Stonith utilizando o agente (fence_xvm) que é voltado a mvs/vms, se você não esta usando mvs/vms, procure por seu agente especifico. DLM, CLVM(LVM). O primeiro trata os blocos assim como o nome sugere, porque, se um dos nós do cluster cair, é nosso dever manter o outo nó do cluster limpo.(LVM/CLVM) nada mais são que gerenciadores de volume lógico. Se vários nós do cluster exigirem acesso simultâneo de leitura / gravação a volumes LVM em um sistema ativo / ativo, você deverá usar o CLVMD.
 O CLVMD fornece um sistema para coordenar a ativação e as alterações nos volumes de LVM nos nós de um cluster simultaneamente.
 O serviço de bloqueio em cluster da CLVMD fornece proteção aos metadados do LVM, pois vários nós do cluster interagem com os volumes e fazem alterações em seu layout.
 
@@ -132,10 +129,10 @@ Configuração de Firewall
 Consulte a documentação do seu firewall para saber como abrir / permitir portas. Você precisará das seguintes portas abertas para seu cluster funcionar corretamente. 
 Portas:
 
-Component   --------------------------------  Protocol   ----------------------------           Port
-DRBD        --------------------------------    TCP      ----------------------------           7788
-Corosync    --------------------------------    UDP      ----------------------------        5404, 5405
-GFS2        --------------------------------    TCP      ----------------------------    2224, 3121, 21064
+Component -------------------  Protocol   --------------------           Port
+DRBD      -------------------    TCP      --------------------           7788
+Corosync  -------------------    UDP      --------------------        5404, 5405
+GFS2      -------------------    TCP      --------------------    2224, 3121, 21064
 
 ```
 $ sudo iptables -I INPUT -p tcp --dport 2224 -j ACCEPT   ---   iptables -nL | grep 2224
@@ -154,15 +151,17 @@ $ sudo firewall-cmd reload
 
 ## 9. Instale o DRBD:(Replicar em todos servers/mvs/vms/nós!)
 
-'$ sudo rpm -ivh http://www.elrepo.org/elrepo-release-7.0-2.el7.elrepo.noarch.rpm
-
-'$ lsmod | grep -i drbd
+```
+$ sudo rpm -ivh http://www.elrepo.org/elrepo-release-7.0-2.el7.elrepo.noarch.rpm
+$ lsmod | grep -i drbd
+```
 
 Verifique se todos os hosts estão com os nomes e ips devidamente configurados.
 
-'$ cat /etc/hostname
-
-'$ cat /etc/hosts
+```
+$ cat /etc/hostname
+$ cat /etc/hosts
+```
 
 ## 10. Arquivos de configuração(Replicar em todos servers/mvs/vms/nós!)
 
