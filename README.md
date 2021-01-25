@@ -129,10 +129,12 @@ Configuração de Firewall
 Consulte a documentação do seu firewall para saber como abrir / permitir portas. Você precisará das seguintes portas abertas para seu cluster funcionar corretamente. 
 Portas:
 
-Component -------------------  Protocol   --------------------           Port
-DRBD      -------------------    TCP      --------------------           7788
-Corosync  -------------------    UDP      --------------------        5404, 5405
-GFS2      -------------------    TCP      --------------------    2224, 3121, 21064
+
+| # | Component   | Protocol    | Port              |
+|---|-------------|-------------|-------------------|
+| 1 | DRBD        |     TCP     | 7788              |
+| 2 | Corosync    |     UDP     | 5404, 5405        |
+| 3 | GFS2        |     TCP     | 2224, 3121, 21064 |
 
 ```
 $ sudo iptables -I INPUT -p tcp --dport 2224 -j ACCEPT   ---   iptables -nL | grep 2224
@@ -169,13 +171,13 @@ Edite o arquivo “/etc/drbd.d/global_common.conf” e modifique a opção “us
 E nos dois nós do cluster crie o arquivo, “r0.res” dentro do diretório, “/etc/drbd.d/”.
 Mova o arquivo de loop que deve ficar oo diretório: “/etc/init.d/loop-for-drbd” Para manter o modo dual-primary após o reboot.
 
-## 11. Execução do script
+## 11. Execução do script(De acordo com seu ambiente)
 
 Com esses arquivos em seus respectivos lugares, inicia-se a configuração do DRBD para uso em modo (DUAL-PRIMARY).
 Não ativaremos o DRBD nesta etapa, por isso atense-se a configuração para que nada dê errado no momento da ativação do esquema.
 As instruções devem ser implementadas em todas as mvs/nós e etc. Embora, neste guia só seja mostrado rodando em um conjunto de 2 maquinas.
 
-*Execute o script de cluster lendo antes para fazer a devidas modificações de acordo com seu cenário.*
+*Dentro do script estão comentados os comandos das mvs/vms/nós secundarios, leia para fazer modificações de acordo com seu cenário.*
 
 ## 12. That's all folks
 
