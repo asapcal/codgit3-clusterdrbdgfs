@@ -3,37 +3,39 @@ ClusterHA com DRBD(Dual-primary),Pacemaker/Corosync/Stonith-fence_xvm, DLM/CLVM 
 
 Tutorial com base em algumas modificações de diversas pesquisas nos links:
 
+## 1. Esquema e links usados
+
 - http://www.voleg.info/Linux_RedHat6_cluster_drbd_GFS2.html
 - https://www.tecmint.com/setup-drbd-storage-replication-on-centos-7/
--https://clusterlabs.org/pacemaker/doc/en-US/Pacemaker/1.1/html/Clusters_from_Scratch/_initialize_drbd.html
--https://www.learnitguide.net/2016/07/how-to-install-and-configure-drbd-on-linux.html
--https://www.atlantic.net/cloud-hosting/how-to-drbd-replication-configuration/
--https://clusterlabs.org/pacemaker/doc/en-US/Pacemaker/1.1/html/Clusters_from_Scratch/_initialize_drbd.html
--https://www.golinuxcloud.com/ste-by-step-configure-high-availability-cluster-centos-7/
--https://www.justinsilver.com/technology/linux/dual-primary-drbd-centos-6-gfs2-pacemaker/
--https://www.ibm.com/developerworks/community/blogs/mhhaque/entry/how_to_configure_red_hat_cluster_with_fencing_of_two_kvm_guests_running_on_two_ibm_powerkvm_hosts?lang=en
-Esquema abaixo no link -https://icicimov.github.io/blog/high-availability/Clustering-with-Pacemaker-DRBD-and-GFS2-on-Bare-Metal-servers-in-SoftLayer/
+- https://clusterlabs.org/pacemaker/doc/en-US/Pacemaker/1.1/html/Clusters_from_Scratch/_initialize_drbd.html
+- https://www.learnitguide.net/2016/07/how-to-install-and-configure-drbd-on-linux.html
+- https://www.atlantic.net/cloud-hosting/how-to-drbd-replication-configuration/
+- https://clusterlabs.org/pacemaker/doc/en-US/Pacemaker/1.1/html/Clusters_from_Scratch/_initialize_drbd.html
+- https://www.golinuxcloud.com/ste-by-step-configure-high-availability-cluster-centos-7/
+- https://www.justinsilver.com/technology/linux/dual-primary-drbd-centos-6-gfs2-pacemaker/
+- https://www.ibm.com/developerworks/community/blogs/mhhaque/entry/how_to_configure_red_hat_cluster_with_fencing_of_two_kvm_guests_running_on_two_ibm_powerkvm_hosts?lang=en
+- https://www.osradar.com/installing-and-configuring-a-drbd-cluster-in-centos-7/
+- http://www.tadeubernacchi.com.br/desabilitando-o-firewalld-centos-7/
+- https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/selinux_users_and_administrators_guide/sect-Security-Enhanced_Linux-Working_with_SELinux-Changing_SELinux_Modes#sect-Security-Enhanced_Linux-Enabling_and_Disabling_SELinux-Permissive_Mode
+- https://www.learnitguide.net/2016/07/how-to-install-and-configure-drbd-on-linux.html
+- https://www.atlantic.net/cloud-hosting/how-to-drbd-replication-configuration/
+- https://www.tecmint.com/setup-drbd-storage-replication-on-centos-7/
+- https://major.io/2011/02/13/dual-primary-drbd-with-ocfs2/
+- https://www.golinuxcloud.com/configure-gfs2-setup-cluster-linux-rhel-centos-7/
+- https://clusterlabs.org/pacemaker/doc/en-US/Pacemaker/1.1/html/Clusters_from_Scratch/ch09.html
+- https://www.lisenet.com/2016/o2cb-cluster-with-dual-primary-drbd-and-ocfs2-on-oracle-linux-7/
+- http://www.voleg.info/stretch-nfs-cluster-centos-drbd-gfs2.html
+- http://jensd.be/186/linux/use-drbd-in-a-cluster-with-corosync-and-pacemaker-on-centos-7
+- https://icicimov.github.io/blog/high-availability/Clustering-with-Pacemaker-DRBD-and-GFS2-on-Bare-Metal-servers-in-SoftLayer/
+- https://www.justinsilver.com/technology/linux/dual-primary-drbd-centos-6-gfs2-pacemaker/
+- http://www.tadeubernacchi.com.br/desabilitando-o-firewalld-centos-7/
+- http://tutoriaisgnulinux.com/2013/06/08/_redhat-cluster-configurando-fence_virt/
+- https://www.ntppool.org/zone/br
+- https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/selinux_users_and_administrators_guide/sect-Security-Enhanced_Linux-Working_with_SELinux-Changing_SELinux_Modes
+- https://www.golinuxcloud.com/ste-by-step-configure-high-availability-cluster-centos-7/,https://clusterlabs.org/pacemaker/doc/en-US/Pacemaker/1.1/html/Clusters_from_Scratch/_install_the_cluster_software.html
 
-## 1. Esquema 
-
-------------  ------------             ------------  ------------
-|  Service |  |  Service |             |  Service |  |  Service |
-------------  ------------             ------------  ------------
-     ||            ||                       ||            ||
---------------------------  cluster FS --------------------------
-|          gfs2          |<- - - - - ->|          gfs2          |
--------------------------- replication --------------------------
-|        drbd r0         |<- - - - - ->|         drbd r0        |
---------------------------             --------------------------
-|        lv_vol          |     c       |         lv_vol         |
---------------------------     l       --------------------------
-|   volume group vg1     |     u       |    volume group vg2    |
---------------------------     s       --------------------------
-|     physical volume    |     t       |     physical volume    |
---------------------------     e       --------------------------
-|          xvdb1         |     r       |          xvdb2         |
---------------------------             --------------------------
-         server01                               server0x
+Esquema lógico similar ao apresentado neste link:
+- https://icicimov.github.io/blog/high-availability/Clustering-with-Pacemaker-DRBD-and-GFS2-on-Bare-Metal-servers-in-SoftLayer/
 
 ## 2. Configuração dos "discos,partições,progs,ferramentas" usados:
 
@@ -43,7 +45,6 @@ CentOS 7, Pacemaker, Corosync, Stonith, Fence, DLM, CLVM, gfs2fs.
 ## 3. Configuções de rede
 
 Iniciando a configuração, primeiramente precisamos deixar essas duas maquinas prontas para receber a configuração inicial, e o primeiro passo é definirmos os seus IP’s como estáticos, para criarmos uma conexão ssh estável entre elas.
-
 Acessaremos as maquinas apenas via SSH para este tutorial. Caso você não saiba usar o SSH veja este tutorial:(http://rberaldo.com.br/usando-o-ssh/):
 
 Ex:
@@ -53,13 +54,9 @@ vm1 : 10.255.255.xxx → ssh vm1@10.255.255.xxx
 ```
 
 Lembrete, mantenha sempre o seu sistema atualizado, um exemplo de comando que pode te ajudar é o: yum update .
-
 Mudar o IP destas maquinas precisaremos acessar o arquivo: vi /etc/sysconfig/network-scripts/ifcfg-eth0 . E mudar para o modo para estático.
-
 Agora, com as placas de rede já configuradas, precisa-se redefinir o nome das maquinas virtuais no arquivo: /etc /hosts.
-
 IPC: Exitem varias formas, por exemplo: hostnamectl set-hostname “lalala.pc.uou”. Em que “lalala.pc.uou” é o novo hostname completo da minha maquina. Em caso de duvida, recomendo o link: -https://www.hostinger.com.br/tutoriais/como-mudar-hostname-ubuntu/
-
 Começar de vez a configuração. Primeiramente vou mostrar um layout de como o projeto foi desenvolvido e a forma que achei mas fácil pra implementar a configuração.
 
 ## 4. Etapas da configuração
@@ -129,12 +126,9 @@ $ sudo reboot
 ```
 Para saber mais acesse o link: https://www.cyberciti.biz/faq/disable-selinux-on-centos-7-rhel-7-fedora-linux/
 
-Revisando toda configuração até aqui.
-
 ## 8. Revisando toda configuração até aqui.Firewall(Replicar em todos servers/mvs/vms/nós!)
 
- Configuração de Firewall
-
+Configuração de Firewall
 Consulte a documentação do seu firewall para saber como abrir / permitir portas. Você precisará das seguintes portas abertas para seu cluster funcionar corretamente. 
 Portas:
 
@@ -142,12 +136,13 @@ Component   --------------------------------  Protocol   -----------------------
 DRBD        --------------------------------    TCP      ----------------------------           7788
 Corosync    --------------------------------    UDP      ----------------------------        5404, 5405
 GFS2        --------------------------------    TCP      ----------------------------    2224, 3121, 21064
+
 ```
-$ iptables -I INPUT -p tcp --dport 2224 -j ACCEPT   ---   iptables -nL | grep 2224
-$ iptables -I INPUT -p tcp --dport 3121 -j ACCEPT   ---   iptables -nL | grep 3121
-$ iptables -I INPUT -p tcp --dport 21064 -j ACCEPT ---   iptables -nL | grep 21064
-$ iptables -I INPUT -p udp --dport 5404 -j ACCEPT  ---   iptables -nL | grep 5404
-$ iptables -I INPUT -p udp --dport 5405 -j ACCEPT  ---   iptables -nL | grep 5405
+$ sudo iptables -I INPUT -p tcp --dport 2224 -j ACCEPT   ---   iptables -nL | grep 2224
+$ sudo iptables -I INPUT -p tcp --dport 3121 -j ACCEPT   ---   iptables -nL | grep 3121
+$ sudo iptables -I INPUT -p tcp --dport 21064 -j ACCEPT ---   iptables -nL | grep 21064
+$ sudo iptables -I INPUT -p udp --dport 5404 -j ACCEPT  ---   iptables -nL | grep 5404
+$ sudo iptables -I INPUT -p udp --dport 5405 -j ACCEPT  ---   iptables -nL | grep 5405
 ```
 
 Tambem habilite a porta 7788 no firewall, de ambas as maquinas para não sofrer futuros erros de validação, faça os comandos abaixos em todos os nós do projeto.
@@ -156,29 +151,6 @@ Tambem habilite a porta 7788 no firewall, de ambas as maquinas para não sofrer 
 $ sudo firewall-cmd --permanent --add-rich-rule='rule family="ipv4" source address="10.255.255.231" port port="7788" protocol="tcp" accept'
 $ sudo firewall-cmd reload
 ```
-
-Os links usados até aqui, e os que ainda serão usados. 
-
-- https://www.osradar.com/installing-and-configuring-a-drbd-cluster-in-centos-7/
-- http://www.tadeubernacchi.com.br/desabilitando-o-firewalld-centos-7/
-- https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/selinux_users_and_administrators_guide/sect-Security-Enhanced_Linux-Working_with_SELinux-Changing_SELinux_Modes#sect-Security-Enhanced_Linux-Enabling_and_Disabling_SELinux-Permissive_Mode
-- https://www.learnitguide.net/2016/07/how-to-install-and-configure-drbd-on-linux.html
-- https://www.atlantic.net/cloud-hosting/how-to-drbd-replication-configuration/
-- https://www.tecmint.com/setup-drbd-storage-replication-on-centos-7/
-- https://major.io/2011/02/13/dual-primary-drbd-with-ocfs2/
-- https://www.golinuxcloud.com/configure-gfs2-setup-cluster-linux-rhel-centos-7/
-- https://clusterlabs.org/pacemaker/doc/en-US/Pacemaker/1.1/html/Clusters_from_Scratch/ch09.html
-- https://www.lisenet.com/2016/o2cb-cluster-with-dual-primary-drbd-and-ocfs2-on-oracle-linux-7/
-- http://www.voleg.info/stretch-nfs-cluster-centos-drbd-gfs2.html
-- http://jensd.be/186/linux/use-drbd-in-a-cluster-with-corosync-and-pacemaker-on-centos-7
-- https://icicimov.github.io/blog/high-availability/Clustering-with-Pacemaker-DRBD-and-GFS2-on-Bare-Metal-servers-in-SoftLayer/
-- https://www.justinsilver.com/technology/linux/dual-primary-drbd-centos-6-gfs2-pacemaker/
-- http://www.tadeubernacchi.com.br/desabilitando-o-firewalld-centos-7/
-- http://tutoriaisgnulinux.com/2013/06/08/_redhat-cluster-configurando-fence_virt/
-- https://www.ntppool.org/zone/br
-- https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/selinux_users_and_administrators_guide/sect-Security-Enhanced_Linux-Working_with_SELinux-Changing_SELinux_Modes
-- https://www.golinuxcloud.com/ste-by-step-configure-high-availability-cluster-centos-7/,https://clusterlabs.org/pacemaker/doc/en-US/Pacemaker/1.1/html/Clusters_from_Scratch/_install_the_cluster_software.html
-
 
 ## 9. Instale o DRBD:(Replicar em todos servers/mvs/vms/nós!)
 
@@ -205,7 +177,6 @@ Não ativaremos o DRBD nesta etapa, por isso atense-se a configuração para que
 As instruções devem ser implementadas em todas as mvs/nós e etc. Embora, neste guia só seja mostrado rodando em um conjunto de 2 maquinas.
 
 *Execute o script de cluster lendo antes para fazer a devidas modificações de acordo com seu cenário.*
-
 
 ## 12. That's all folks
 
