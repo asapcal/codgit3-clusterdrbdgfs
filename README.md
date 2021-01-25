@@ -39,13 +39,13 @@ Esquema lógico similar ao apresentado neste link:
 
 ## 2. Configuração dos "discos,partições,progs,ferramentas" usados:
 
-Foi utilizado para o esquema, 2 mvs/vms de 50,3Gb com partições de 10,7Gb cada. Na mesma rede via SHELL/BASH/via SSH
+Foi utilizado para o esquema, 2 mvs/vms de 50,3Gb com partições de 10,7Gb cada. Na mesma rede usando nada além de SHELL/BASH/SSH
 CentOS 7, Pacemaker, Corosync, Stonith, Fence, DLM, CLVM, gfs2fs. 
 
 ## 3. Configuções de rede
 
-Iniciando a configuração, primeiramente precisamos deixar essas duas maquinas prontas para receber a configuração inicial, e o primeiro passo é definirmos os seus IP’s como estáticos, para criarmos uma conexão ssh estável entre elas.
-Acessaremos as maquinas apenas via SSH para este tutorial. Caso você não saiba usar o SSH veja este tutorial:(http://rberaldo.com.br/usando-o-ssh/):
+Iniciando a configuração, o primeiro passo é definir os seus IP’s como estáticos, para criar uma conexão ssh estável entre elas.
+Caso você não saiba usar o SSH veja este tutorial:(http://rberaldo.com.br/usando-o-ssh/):
 
 Ex:
 
@@ -180,5 +180,4 @@ As instruções devem ser implementadas em todas as mvs/nós e etc. Embora, nest
 *Dentro do script estão comentados os comandos das mvs/vms/nós secundarios, leia para fazer modificações de acordo com seu cenário.*
 
 ## 12. That's all folks
-
 ![That's all folks](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRjTP8kaxaOmV1_V4FYGLwJ27se8-5WUl-IyQ&usqp=CAU)
