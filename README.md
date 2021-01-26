@@ -1,6 +1,6 @@
 Cluster HA DRBD(Dual-primary),Pacemaker/Corosync/Stonith-fence_xvm, DLM/CLVM e gfs2fs
 =====================================================================================
-Tutorial com base em algumas modificações de diversas pesquisas nos links:
+Tutorial e algumas modificações de diversas pesquisas:
 
 ## 1. Links e tutoriais usados
 - http://www.voleg.info/Linux_RedHat6_cluster_drbd_GFS2.html
@@ -45,7 +45,7 @@ Caso você não saiba usar o SSH veja este tutorial:(http://rberaldo.com.br/usan
 hostname:vm1 - ip:10.255.255.xxx → ssh vm1@10.255.255.xxx
 ```
 Lembrete, mantenha sempre o seu sistema atualizado!
-Mudar o IP destas maquinas via arquivo para modo estático, ex:
+Mudar o IP destas maquinas via arquivo para modo estático.Ex:
 ```
 $ sudo vi /etc/sysconfig/network-scripts/ifcfg-eth0
 ```
