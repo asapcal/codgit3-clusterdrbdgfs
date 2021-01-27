@@ -4,12 +4,11 @@
 #
 # Copyright (C) 2029 - 2029 Asaph <asaph.lac.19@hotmail.com>
 #
-#Os comandos a serem executados nos "nós secundarios" estaão neste script em forma de comentario
-#por favor leia o arquivo até p final e o Readme.md em caso de duvida.
+#ler o Readme.md em caso de duvida.
 
 #Instale do corosync e pacemaker. Verifique se os hosts estão corretamente identificados no arquivo: “/etc/hosts”
 
-#[root@n1drbd ~]# cat /etc/hosts
+#$ cat /etc/hosts
 #127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
 #::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
 #novos nomes e ips
@@ -482,11 +481,6 @@ cd /clusterfs
 touch file
 
 #Agora verifique que os arquivos são replicados em tempo real para o segundo nó(vm2).
-
 #[root@vm2 ~]#
-
 #cd /clusterfs
-
 #ls
-
-#OBS.: Verificar modificação manual de arquivos contidas no script!!!
