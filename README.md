@@ -1,8 +1,8 @@
 Cluster HA DRBD(Dual-primary),Pacemaker/Corosync/Stonith-fence_xvm, DLM/CLVM e gfs2fs
 =====================================================================================
-Tutorial e algumas modificações de diversas pesquisas:
+Tutorial and some modifications of several researches: 
 
-## 1. Links e tutoriais usados
+## 1. Links and tutorials used 
 - http://www.voleg.info/Linux_RedHat6_cluster_drbd_GFS2.html
 - https://www.tecmint.com/setup-drbd-storage-replication-on-centos-7/
 - https://clusterlabs.org/pacemaker/doc/en-US/Pacemaker/1.1/html/Clusters_from_Scratch/_initialize_drbd.html
@@ -32,51 +32,50 @@ Tutorial e algumas modificações de diversas pesquisas:
 - https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/selinux_users_and_administrators_guide/sect-Security-Enhanced_Linux-Working_with_SELinux-Changing_SELinux_Modes
 - https://www.golinuxcloud.com/ste-by-step-configure-high-availability-cluster-centos-7/,https://clusterlabs.org/pacemaker/doc/en-US/Pacemaker/1.1/html/Clusters_from_Scratch/_install_the_cluster_software.html
 
-Esquema similar ao apresentado no link:
+Similar scheme to that presented in the link: 
 - https://icicimov.github.io/blog/high-availability/Clustering-with-Pacemaker-DRBD-and-GFS2-on-Bare-Metal-servers-in-SoftLayer/
 
-## 2. Configuração/discos/programas/ferramentas
-2 mvs/vms de 50,3Gb com partições de 10,7Gb cada. Na mesma rede usando nada além de SHELL/BASH/SSH. SO e recursos usandos: CentOS 7, Pacemaker, Corosync, Stonith, Fence, DLM, CLVM, gfs2fs. 
+## 2.Configuration / disks / programs / tools 
+2 mvs / vms of 50.3Gb with partitions of 10.7Gb each. On the same network using nothing but SHELL / BASH / SSH. OS and resources using:  CentOS 7, Pacemaker, Corosync, Stonith, Fence, DLM, CLVM, gfs2fs. 
 
-## 3. Configuções de rede
-Iniciando a configuração, o primeiro passo é definir os seus IP’s como estáticos, para criar uma conexão ssh estável entre elas.
-Caso você não saiba usar o SSH veja este tutorial:(http://rberaldo.com.br/usando-o-ssh/).Ex:
+## 3. Network settings 
+Starting the configuration, the first step is to define your IP’s as static, to create a stable ssh connection between them.
+If you don't know how to use SSH see this tutorial :(http://rberaldo.com.br/usando-o-ssh/).Ex:
 ```
 hostname:vm1 - ip:10.255.255.xxx → ssh vm1@10.255.255.xxx
 ```
-Lembrete, mantenha sempre o seu sistema atualizado!
-Mudar o IP destas maquinas via arquivo para modo estático.Ex:
+Reminder, always keep your system up to date!
+Change the IP of these machines via file to static mode .Ex:
 ```
 $ sudo vi /etc/sysconfig/network-scripts/ifcfg-eth0
 ```
-Agora, com as placas de rede já configuradas, precisa-se redefinir o nome das maquinas virtuais no arquivo: /etc /hosts.
-IPC: Exitem varias formas, por exemplo: hostnamectl set-hostname “vm0.cluster”. Em que “vm0.cluster” é o novo hostname completo da mv.
+Now, with the network cards already configured, it is necessary to redefine the name of the virtual machines in the file: / etc / hosts.
+IPC: There are several ways, for example: hostnamectl set-hostname “vm0.cluster”. Where “vm0.cluster” is mv's new full hostname.
 
-## 4. Etapas da configuração
-- Etapa 1: Preparação da maquina quanto a rede e nome, que acabei de mostrar. Juntamente com a instalação do DRBD e a sua configuração em modo (DUAL-PRIMARY).E depois a instalação e configuração dos gerenciadores de cluster, o COROSYNC e o PACEMAKER. 
-- Etapa 2: Instalação do CLUSTER PCS e a configuração deste cluster com o Fence e Stonith utilizando o agente (fence_xvm) que é voltado a mvs/vms, se você não esta usando mvs/vms, procure por seu agente especifico. DLM, CLVM(LVM). O primeiro trata os blocos assim como o nome sugere, porque, se um dos nós do cluster cair, é nosso dever manter o outo nó do cluster limpo.(LVM/CLVM) nada mais são que gerenciadores de volume lógico. Se vários nós do cluster exigirem acesso simultâneo de leitura / gravação a volumes LVM em um sistema ativo / ativo, você deverá usar o CLVMD.
-O CLVMD fornece um sistema para coordenar a ativação e as alterações nos volumes de LVM nos nós de um cluster simultaneamente.
-O serviço de bloqueio em cluster da CLVMD fornece proteção aos metadados do LVM, pois vários nós do cluster interagem com os volumes e fazem alterações em seu layout.
-- Etapa 3: Criação dos ultimos recursos para a conclusão do projeto. Dentre eles temos o PV(Phisical Volume), o VG(Volume Group) e o LV(logical volume). No qual será montado o DRBD, e para isso mudaremos a configuração inical feita no arquivo de recurso("r0.res"). E formatação do "disco" simulado pelo DRBD com um sistema de arquivos GFS2FS e montagem de uma partição nele. Vale a pena mencionar que esta ultima etapa só deve ser feita na(o) mv/vm/server/nó primario (por que a mudança será replicada automaticamente).
-IPC: A montagem e a configuração do DRBD foi feita no inicio por preferência minha, ela pode ser feita no final quando for necessaria sua implementação no código.
-
-## 5. Instalação das dependencias DRBD
-Adicionar o repositorio dos pacotes para o funcionamento do DRBD(Em todos servers/mvs/vms/nós!):
+## 4.Configuration steps
+- Step 1: Preparation of the machine regarding the network and name, which I have just shown. Together with the installation of DRBD and its configuration in mode (DUAL-PRIMARY) .And then the installation and configuration of the cluster managers, COROSYNC and PACEMAKER.
+- Step 2: Installation of CLUSTER PCS and the configuration of this cluster with Fence and Stonith using the agent (fence_xvm) which is aimed at mvs / vms, if you are not using mvs / vms, look for your specific agent. DLM, CLVM (LVM). The first one deals with blocks as the name suggests, because if one of the cluster nodes goes down, it is our duty to keep the other cluster node clean. (LVM / CLVM) are nothing more than logical volume managers. If multiple nodes in the cluster require simultaneous read / write access to LVM volumes on an active / active system, you must use CLVMD.
+CLVMD provides a system for coordinating activation and changes in LVM volumes on nodes in a cluster simultaneously.
+The CLVMD clustered blocking service provides protection for LVM metadata, as multiple nodes in the cluster interact with the volumes and make changes to their layout.
+- Step 3: Creation of the last resources for the completion of the project. Among them we have the PV (Phisical Volume), the VG (Volume Group) and the LV (logical volume). On which the DRBD will be mounted, and for that we will change the initial configuration made in the resource file ("r0.res"). And formatting the DRBD-simulated "disk" with a GFS2FS file system and mounting a partition on it. It is worth mentioning that this last step should only be done on the (m) / vm / server / primary node (because the change will be replicated automatically).
+IPC: The assembly and configuration of the DRBD was done at the beginning by my preference, it can be done at the end when it is necessary to implement it in the code. 
+## 5. Installation of DRBD facilities
+Add the package repository for DRBD operation (On all servers / mvs / vms / nodes!): 
 ```
 $ sudo rpm -ivh http://www.elrepo.org/elrepo-release-7.0-2.el7.elrepo.noarch.rpm
 $ sudo rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-elrepo.org
 $ sudo yum install drbd kmod-drbd
 $ sudo yum install drbd90-utils.x86_64 drbd84-utils-sysvinit.x86_64 kmod-drbd84.x86_64”
 ```
-Este ultimo comando deverá, depois de uma pergunta que deve ser respondida com (y), exibir uma resposta do tipo “Concluído”. 
+This last command should, after a question that must be answered with (y), display a “Done” answer.  
 
-## 6. Preparando os discos e partições(Replicar em todos servers/mvs/vms/nós!)
-Agora o DRBD já está instalado, prepare o disco e as partiçoes para o arquivo de configuração do recurso (não precisa se preocupar com a identificação do modulo o mesmo será carregado no próximo boot e se os arquivos de configurção estiverem corretos, tudo funcionará).
+## 6. Preparing disks and partitions (Replicate on all servers / mvs / vms / nodes!)
+Now the DRBD is already installed, prepare the disk and the partitions for the resource configuration file (no need to worry about the module identification, it will be loaded at the next boot and if the configuration files are correct, everything will work). 
 ```
 $ sudo cfdisk /dev /nomedapartição 
 ```
-Atente-se ao nome de seu disco/partição que pode ser diferente dependendo da distribuição linux que esta sendo usada("No meu caso: xvdb").
-Depois de acionar esse comado, selecione a opção, NOVA (para criar uma nova partição), e depois a opção GRAVAR, para confirmar a criação dessa nova partição em disco. Mude a saida do comando: “lsblk” para este estado, pode se usar o comado: fdisk também.Ex:
+Pay attention to the name of your disk / partition which can be different depending on the linux distribution being used ("In my case: xvdb").
+After activating this command, select the option, NEW (to create a new partition), and then the option SAVE, to confirm the creation of this new disk partition. Change the output of the command: "lsblk" to this state, you can use the command: fdisk as well.Ex:
 ```
 [user@hostname ~]$ lsblk
 NAME                           MAJ:MIN  RM    SIZE  RO TYPE  MOUNTPOINT
@@ -90,8 +89,8 @@ xvdb                            132:16   0     10G   0 disk
 └─xvdb1                         132:17   0     10G   0 part
 ```
 
-## 7. SELinux permissivo ou desativado(Replicar em todos servers/mvs/vms/nós!)
-Ou mude o estado do SELinux para permissivo, com os comandos abaixo.
+## 7. SELinux permissive or disabled (Replicate on all servers / mvs / vms / nodes!)
+Or change the SELinux state to permissive, with the commands below. 
 ```
 $ sudo setenforce permissive
 $ sudo sestatus
@@ -105,7 +104,7 @@ Policy MLS status:                                enabled
 Policy deny_unknown status:              allowed
 Max kernel policy version:                      31
 ```
-Ou desative o SElinux permanentemente com a sequencia de comandos.
+Or disable SElinux permanently with the command string. 
 ```
 Disabling SELinux permanently
 Edit the /etc/selinux/config file, run:
@@ -115,12 +114,12 @@ SELINUX=disabled
 Save and close the file in vi/vim. Reboot the Linux system:
 $ sudo reboot
 ```
-Para saber mais acesse o link: https://www.cyberciti.biz/faq/disable-selinux-on-centos-7-rhel-7-fedora-linux/
+To learn more visit the link:  https://www.cyberciti.biz/faq/disable-selinux-on-centos-7-rhel-7-fedora-linux/
 
-## 8. Revisando toda configuração até aqui.Firewall(Replicar em todos servers/mvs/vms/nós!)
-Configuração de Firewall
-Consulte a documentação do seu firewall para saber como abrir / permitir portas. Você precisará das seguintes portas abertas para seu cluster funcionar corretamente. 
-Portas:
+## 8. Reviewing all configuration so far. Firewall (Replicate on all servers / mvs / vms / nodes!)
+Firewall configuration
+Consult your firewall documentation to learn how to open / allow ports. You will need the following ports open for your cluster to function properly.
+Ports: 
 | # | Component   | Protocol    | Port              |
 |---|-------------|-------------|-------------------|
 | 1 | DRBD        |     TCP     | 7788              |
@@ -133,33 +132,33 @@ $ sudo iptables -I INPUT -p tcp --dport 21064 -j ACCEPT ---   iptables -nL | gre
 $ sudo iptables -I INPUT -p udp --dport 5404 -j ACCEPT  ---   iptables -nL | grep 5404
 $ sudo iptables -I INPUT -p udp --dport 5405 -j ACCEPT  ---   iptables -nL | grep 5405
 ```
-Tambem habilite a porta 7788 no firewall, de ambas as maquinas para não sofrer futuros erros de validação, faça os comandos abaixos em todos os nós do projeto.
+Also enable port 7788 on the firewall, on both machines so as not to suffer future validation errors, do the commands below on all nodes of the project. 
 ```
 $ sudo firewall-cmd --permanent --add-rich-rule='rule family="ipv4" source address="10.255.255.231" port port="7788" protocol="tcp" accept'
 $ sudo firewall-cmd reload
 ```
 
-## 9. Instale o DRBD:(Replicar em todos servers/mvs/vms/nós!)
+## 9. Install DRBD: (Replicate on all servers / mvs / vms / nodes!) 
 ```
 $ sudo rpm -ivh http://www.elrepo.org/elrepo-release-7.0-2.el7.elrepo.noarch.rpm
 $ lsmod | grep -i drbd
 ```
-Verifique se todos os hosts estão com os nomes e ips devidamente configurados.
+Check that all hosts have their names and ips properly configured.
 ```
 $ cat /etc/hostname
 $ cat /etc/hosts
 ```
 
-## 10. Arquivos de configuração(Replicar em todos servers/mvs/vms/nós!)
-Edite o arquivo “/etc/drbd.d/global_common.conf” e modifique a opção “usage-count de yes para no” e salve o arquivo, em todos os nós(mvs) do DRBD.
-E em todos os nós/vms/etc do cluster crie o arquivo, “r0.res” dentro do diretório, “/etc/drbd.d/”.
-Mova o arquivo de loop que deve ficar oo diretório: “/etc/init.d/loop-for-drbd” Para manter o modo dual-primary(no meu caso) após o reboot.
+## 10. Configuration files (Replicate on all servers / mvs / vms / nodes!)
+Edit the file “/etc/drbd.d/global_common.conf” and change the option “usage-count from yes to no” and save the file on all DRBD nodes (mvs).
+And on all nodes / vms / etc in the cluster create the file, “r0.res” inside the directory, “/etc/drbd.d/”.
+Move the loop file that should be in the directory: “/etc/init.d/loop-for-drbd” To keep the dual-primary mode (in my case) after the reboot. 
 
-## 11. Execução do script(De acordo com seu ambiente)
-Com esses arquivos em seus respectivos lugares, inicie a configuração do DRBD para uso em modo (DUAL-PRIMARY).
-Não ative o DRBD nesta etapa, para que nada dê errado no momento da ativação do cluster.
-As instruções devem ser implementadas em todas as mvs/nós e etc. Embora, neste guia só seja mostrado rodando em um conjunto de 2 maquinas virtualizadas com vmware em uma mesma rede.
-*Dentro do script estão comentados os comandos das mvs/vms/nós secundarios, leia para fazer modificações de acordo com seu cenário.*
+## 11. Script execution (According to your environment)
+With these files in their respective places, start configuring the DRBD for use in (DUAL-PRIMARY) mode.
+Do not activate DRBD in this step, so that nothing goes wrong when activating the cluster.
+The instructions must be implemented in all mvs / nodes and so on. Although, this guide is only shown running on a set of 2 virtualized machines with VMware on the same network.
+* The mvs / vms / secondary nodes commands are commented within the script, read on to make changes according to your scenario. * 
 
-## 12. Isso é tudo.. até agora
+## 12. That's all .. so far 
 ![That's all folks](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRjTP8kaxaOmV1_V4FYGLwJ27se8-5WUl-IyQ&usqp=CAU)
