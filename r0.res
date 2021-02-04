@@ -1,6 +1,4 @@
-#Edite o arquivo “/etc/drbd.d/global_common.conf” e modifique a opção “usage-count de yes para no” e salve o arquivo, 
-em todos os nós(mvs) do DRBD. Exemplo:
-#E nos dois nós do cluster crie o arquivo, “r0.res” dentro do diretório, “/etc/drbd.d/”.
+#“r0.res” -> “/etc/drbd.d/”.
 global {
 	usage-count no;
 }    
