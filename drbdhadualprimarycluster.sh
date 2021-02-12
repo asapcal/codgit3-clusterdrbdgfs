@@ -2,7 +2,7 @@
 #
 # Description: Startup script for clustredrbdgfs dual-primary mode!
 #
-# Copyright (C) 2029 - 2029 Asaph <asaph.lac.19@hotmail.com>
+# Asaph <asaph.lac.19@hotmail.com>
 #
 
 #$ cat /etc/hosts
