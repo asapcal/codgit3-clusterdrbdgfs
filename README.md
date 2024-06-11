@@ -160,5 +160,4 @@ Do not activate DRBD in this step, so that nothing goes wrong when activating th
 The instructions must be implemented in all mvs / nodes and so on. Although, this guide is only shown running on a set of 2 virtualized machines with VMware on the same network.
 * The mvs / vms / secondary nodes commands are commented within the script, read on to make changes according to your scenario. * 
 
-## 12. That's all .. so far 
 ![That's all folks](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRjTP8kaxaOmV1_V4FYGLwJ27se8-5WUl-IyQ&usqp=CAU)
